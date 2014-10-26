@@ -1,6 +1,7 @@
 Coding-Everyday
 ===============
 Author: Sam M (S-Vortex)
+
 Site: S-Vortex.com
 
 In parallel to daily sketching/painting, I want to code daily.
