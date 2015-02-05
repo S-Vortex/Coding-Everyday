@@ -7,7 +7,7 @@
 #// Language: Python 3.4.1
 #// File Name: client.py
 #//
-#// Programs Purpose:
+#// Programs Purpose:h
 #//   This client program connects to three instances of its corresponding
 #//   server. It then iterates through a list of numbers, sending them to each
 #//   server one at a time.
@@ -154,8 +154,8 @@ def format(numberlist):
     return result_str
 
 def format2(numberlist):
-    result_str =("Results computed by the client from data sent by"\
-    " the servers:\n\nMinimun value: %f \nMaximum value: %f \n"\
+    result_str =("Results computed by the client:"\
+    "\n\nMinimun value: %f \nMaximum value: %f \n"\
     "Standard deviation value: %f" % (numberlist[0],\
     numberlist[1],numberlist[2]))
     return result_str
@@ -340,6 +340,7 @@ output_str = format(result_list)
 print('\n\n' + output_str + '\n\n')
 
 #compute and print out data from this client itself using the original list
+numbers.pop() #there is a -1 at the end of the list, we don't want that any more
 result_list = compute(numbers)
 output_str = format2(result_list)
 print('\n\n' + output_str + '\n\n')
