@@ -28,7 +28,7 @@
 #//
 #// Operating System: Windows 8.1
 #// IDE: Sublime Text 3
-#// Operational Status: not working
+#// Operational Status: Working
 #// Developement Computer: Xeta (Sam Mills' surface pro 3)
 #//////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +40,7 @@ import re
 from random import randint
 from socket import *
 import struct
+import statistics
 
 #==============================================================================
 #=============================================================
@@ -92,9 +93,9 @@ def recvall(sock, count):
     return buf
 
 def recv_one_message(sock):
-    num_received = struct.unpack('!i', recvall(sock, 4))
-    num_received_num = num_received[0]
-    return struct.unpack('50p',recvall(sock, num_received_num))
+    num_received, = struct.unpack('!i', recvall(sock, 4))
+    returned2, = struct.unpack('50p',recvall(sock, num_received))
+    return returned2
 
 #receives the computed data from the servers as a string,
 #comma separated, splits the string into integers, and puts 
@@ -107,6 +108,7 @@ def recv_values(sock):
 	numberlist = map(float, msg_string.split(','))
 	return recvall(sock, length)
 
+
 #Combines the returned values into the final data
 #There will be 5 values: Min, Max, and three std_devs
 def combine(listA, listB, listC):
@@ -115,16 +117,16 @@ def combine(listA, listB, listC):
 	#set templist to be the min values
 	tempList = [listA[0], listB[0], listC[0]]
 	#set final list to be min of min values
-	listD[0] = min(tempList)
+	listD.append(min(tempList))
 	#set templist to be the max values
 	tempList = [listA[1], listB[1], listC[1]]
 	#set final list to be min of max values
-	listD[1] = max(tempList)
+	listD.append(max(tempList))
 	#Set the rest of the list to be the standard deviations
 	#because we cannot combine them into one term
-	listD[2] = listA[2]
-	listD[3] = listB[2]
-	listD[4] = listB[2]
+	listD.append(listA[2])
+	listD.append(listB[2])
+	listD.append(listB[2])
 	#return the list
 	return listD
 
@@ -134,28 +136,29 @@ def compute(numberlist):
 	#final list
 	results = []
 	#set first number to min of list
-	results[0] = min(numberlist)
+	results.append(min(numberlist))
 	#second number is max
-	results[1] = max(numberlist)
+	results.append(max(numberlist))
 	#third is std_dev
-	results[2] = stdev(numberlist)
+	results.append(float(statistics.stdev(numberlist)))
 	#return the results
 	return results
 
 #Takes the computed data in the form of a list and puts it
 #into a string ready to be displayed to the user
 def format(numberlist):
-	if(len(numberlist) == 5):
-		result_str =("Results computed by the client from data sent by"\
-		" the servers:\n\nMinimun value: %d \nMaximum value: %d \n"\
-		"Standard deviation values: %d, %d, %d" % numberlist)
-	if(len(numberlist) == 3):
-		result_str =("Results computed by the client from data sent by"\
-		" the servers:\n\nMinimun value: %d \nMaximum value: %d \n"\
-		"Standard deviation values: %d, %d, %d" % numberlist)
-	else:
-		result_str = "The wrong list was inputted to formatter"
-	return result_str
+    result_str =("Results computed by the client from data sent by"\
+    " the servers:\n\nMinimun value: %f \nMaximum value: %f \n"\
+    "Standard deviation values: %f, %f, %f" % (numberlist[0],\
+    numberlist[1],numberlist[2],numberlist[3],numberlist[4]))
+    return result_str
+
+def format2(numberlist):
+    result_str =("Results computed by the client from data sent by"\
+    " the servers:\n\nMinimun value: %f \nMaximum value: %f \n"\
+    "Standard deviation value: %f" % (numberlist[0],\
+    numberlist[1],numberlist[2]))
+    return result_str
 
 
 #==============================================================================
@@ -316,19 +319,27 @@ end_send()
 #===================================
 
 #receive the returned string from each socket
-data = 1
-count = 0
+return1 = str(recv_one_message(sock1)).strip( "'b" )
+print("Received "+str(return1)+' from server 1\n')
+return2 = str(recv_one_message(sock2)).strip( "'b" )
+print("Received "+str(return2)+' from server 2\n')
+return3 = str(recv_one_message(sock3)).strip( "'b" )
+print("Received "+str(return3)+' from server 3\n')
 
-return1 = recv_one_message(sock1)
-return2 = recv_one_message(sock2)
-return3 = recv_one_message(sock3)
+#.translate(None, "'b")
+
+#turn returned strings into lists
+returnList1 = list(map(float, return1.split(',')))
+returnList2 = list(map(float, return2.split(',')))
+returnList3 = list(map(float, return3.split(',')))
+
 
 #compute and print the combined data
-result_list = combine(return1, return2, return3)
+result_list = combine(returnList1, returnList2, returnList3)
 output_str = format(result_list)
 print('\n\n' + output_str + '\n\n')
 
 #compute and print out data from this client itself using the original list
 result_list = compute(numbers)
-output_str = format(result_list)
+output_str = format2(result_list)
 print('\n\n' + output_str + '\n\n')
