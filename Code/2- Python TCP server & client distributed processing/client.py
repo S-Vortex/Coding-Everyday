@@ -91,6 +91,11 @@ def recvall(sock, count):
         count -= len(newbuf)
     return buf
 
+def recv_one_message(sock):
+    num_received = struct.unpack('!i', recvall(sock, 4))
+    num_received_num = num_received[0]
+    return struct.unpack('50p',recvall(sock, num_received_num))
+
 #receives the computed data from the servers as a string,
 #comma separated, splits the string into integers, and puts 
 #the integers into a list. It then returns this list. 
@@ -108,11 +113,11 @@ def combine(listA, listB, listC):
 	#final list
 	listD = []
 	#set templist to be the min values
-	tempList = (listA[0], listB[0], listC[0])
+	tempList = [listA[0], listB[0], listC[0]]
 	#set final list to be min of min values
 	listD[0] = min(tempList)
 	#set templist to be the max values
-	tempList = (listA[1], listB[1], listC[1])
+	tempList = [listA[1], listB[1], listC[1]]
 	#set final list to be min of max values
 	listD[1] = max(tempList)
 	#Set the rest of the list to be the standard deviations
@@ -244,6 +249,8 @@ server3 = (IP3, port3)
 sock1 = socket(AF_INET, SOCK_STREAM)
 sock2 = socket(AF_INET, SOCK_STREAM)
 sock3 = socket(AF_INET, SOCK_STREAM)
+serversock = socket(AF_INET, SOCK_STREAM)
+serversock.bind(('localhost', 9999))
 
 # Connect sockets to servers
 print('\nConnecting to servers')
@@ -309,9 +316,12 @@ end_send()
 #===================================
 
 #receive the returned string from each socket
-return1 = recv_values(sock1)
-return2 = recv_values(sock2)
-return3 = recv_values(sock3)
+data = 1
+count = 0
+
+return1 = recv_one_message(sock1)
+return2 = recv_one_message(sock2)
+return3 = recv_one_message(sock3)
 
 #compute and print the combined data
 result_list = combine(return1, return2, return3)

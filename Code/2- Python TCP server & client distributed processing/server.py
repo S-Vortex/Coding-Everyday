@@ -93,9 +93,9 @@ def recvall(sock, count):
 
 #receive one message
 def recv_one_message(sock):
-    lengthbuf = recvall(sock, 4)
-    length, = struct.unpack('!i', lengthbuf)
-    return recvall(sock, length)
+    lengthbuf = int(recvall(sock, 4))
+    length = struct.unpack('!i', lengthbuf)
+    return str(recvall(sock, length))
 
 #receive one integer
 def recv_one_integer(sock):
@@ -105,9 +105,10 @@ def recv_one_integer(sock):
 
 #send the string
 def send_one_message(sock, data):
-    length = len(data)
+    data = bytes(data, 'utf-8')
+    length = len(struct.pack('50p', data))
     sock.sendall(struct.pack('!i', length))
-    sock.sendall(data)
+    sock.sendall(struct.pack('50p', data))
 
 
 #Computes the min, max, and std_dev of a list and returns
@@ -116,11 +117,12 @@ def compute(numberlist):
 	#final list
 	results = []
 	#set first number to min of list
-	results.append([min(numberlist)])
+	results.append(min(numberlist))
 	#second number is max
-	results.append([max(numberlist)])
+	results.append(max(numberlist))
 	#third is std_dev
-	results.append([stdev(numberlist)])
+	results.append(float(statistics.stdev(numberlist)))
+
 	#return the results
 	return results
 
@@ -128,42 +130,45 @@ def compute(numberlist):
 #into a string of data to send back to client
 def format(numberlist):
 	if(len(numberlist) == 3):
-		result_str =("%d, %d, %d" % numberlist)
+		print("Computed data (min, max, std_dev)\n  " + str(numberlist))
+		result_str =("%d, %d, %F" % (int(numberlist[0]), int(numberlist[1]), \
+			float(numberlist[2])))
 	else:
 		result_str = "The wrong list was inputted to formatter"
 	return result_str
 
+
+#===============================================================
+#--                        Connections                        --
+#===============================================================
 #Wait for connections
 data = 1
 count = 0
 connection, address = serversock.accept()
-# while (True):
-# 	count += 1
-# 	data = recv_one_integer(connection)
-# 	num_list.append(data)
-# 	print('%d, ' % data)
-# 	#print(str(count))
-
 
 while (True):
 	count += 1
 	data = recv_one_integer(connection)
 	if(data == -1):
-		print('received quit command')
+		print('received quit command\n')
 		break
 	else:
 		num_list.append(data)
 		print('recieved %d \n' % data)
 
 
-#===============-=======
-#--  compute and send --
-#=======================
+
+#===============================
+#--      compute and send     --
+#===============================
 
 #compute data from list
 results = compute(num_list)
 #turn the results into a string to make sending back to client easier
-results_str = format(results)
+results_str = str(format(results))
+
 
 #send the string over the socket
-send_one_message(serversock, results_str)
+print("\nSending result string seperated by commas:\n   '" + results_str + "'\n")
+send_one_message(connection, results_str)
+print("String converted to bytes and sent.\n")
