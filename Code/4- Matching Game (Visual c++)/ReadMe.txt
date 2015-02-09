@@ -1,0 +1,3 @@
+The compiled .exe is right here in this main folder, compiling again will put it into bin folder within the project folder. 
+
+The game is simply a matching game using Windows Forms in Visual C# made by following the official tutorial from microsoft here: https://msdn.microsoft.com/en-us/library/dd492171.aspx . It uses the wingdings font, and because my computer has magnification on, the fonts (Wingdings is used for  may be significantly misplaced in the forms, but will still work. 
