@@ -21,7 +21,7 @@
       <div class="page-header">
         
 
-        <ul class="nav nav-pills pull-right">
+        <ul class="nav nav-pills pull-right panel panel-default">
           <li>
             <%= link_to "Home",root_url %>
           </li>
@@ -33,32 +33,31 @@
             <%= link_to "About",about_url %>
           </li>
 
+          <li>
+            <div class="panel-body">
+              <%= render 'layouts/user_widget' %>
+            </div>
+          </li>
+
         </ul>
 
         <h1> <%= link_to 'Mini-Blog', '/' %> <small>The small blog site</small></h1>
 
       </div>
-      <div class="col-md-2 pull-right panel panel-default">
-        <div class="panel-body">
-          <%= link_to "New Post", "/posts/new" %><br>
-          <%= link_to "My Posts", "/posts/new" %><br>
-          <%= link_to "Favorited Post", "/posts/new" %><br>
-          <%= link_to "Messages", "/posts/new" %><br>
-          <%= link_to "Friends", "/posts/new" %><br>
-        </div>
-      </div>
+      
+
       <div class="row">
         <div class="col-md-6 col-md-offset-2">
-
-          <%-#Authentication start -%>
-          <% if notice %>
-            <p class="alert alert-success"><%= notice %></p>
-          <% end %>
-          <% if alert %>
-            <p class="alert alert-danger"><%= alert %></p>
-          <% end %>
-
       	 <%= yield %>
+        </div>
+        <div class="col-md-2 pull-right panel panel-default">
+          <div class="panel-body">
+            <%= link_to "New Post", "/posts/new" %><br>
+            <%= link_to "My Posts", "/posts/new" %><br>
+            <%= link_to "Favorited Post", "/posts/new" %><br>
+            <%= link_to "Messages", "/posts/new" %><br>
+            <%= link_to "Friends", "/posts/new" %><br>
+          </div>
         </div>
       </div>
     </div>
