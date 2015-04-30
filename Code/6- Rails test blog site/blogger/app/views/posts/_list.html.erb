@@ -1,0 +1,8 @@
+<% @posts.each do |post| %>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<%= render 'posts/post', post: post %>
+		</div>
+	</div>
+  <br>
+<% end %>
