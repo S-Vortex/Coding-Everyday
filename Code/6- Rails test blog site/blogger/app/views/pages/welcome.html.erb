@@ -1,7 +1,17 @@
-
-
+<div class="pull-left">
+	<h2>Dashboard</h2>
+</div>
+<br>
+<br>
+<br>
+<hr/>
+<div>
 <% @posts.each do |post| %>
-	<%= render 'posts/post', post: post %>
-
-  <br><br><br><br>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<%= render 'posts/post', post: post %>
+		</div>
+	</div>
+  <br>
 <% end %>
+</div>
